@@ -19,7 +19,7 @@ class CreateTransactionsTable extends Migration
             $table->uuid('uuid')->comment("Es identificador de la transaccion en el sistema.")->unique();
             $table->string('status')->comment("Los estados posibles son CREATED, PAYED, PENDING, REJECTED, EXPIRED.");
             $table->string('reference')->nullable(true)->comment("Es la referencia unica enviada a la pasarela.");
-            $table->string('url')->comment("Url de redireccion para pago.");
+            $table->string('url')->nullable(true)->comment("Url de redireccion para pago.");
             $table->timestamps();
             $table->softDeletes();
             $table->index('order_id');
