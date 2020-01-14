@@ -15,13 +15,15 @@ class CreateUsersTable extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
+            $table->string('name',80);
+            $table->string('email',120)->unique();
+            $table->string('phone',40);
+            $table->timestamp('email_verified_at');
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
         });
+        \DB::statement('ALTER TABLE `users` comment "Es la tabla donde se almacenan los usuarios." ');
     }
 
     /**
@@ -31,6 +33,8 @@ class CreateUsersTable extends Migration
      */
     public function down()
     {
+        DB::statement("SET FOREIGN_KEY_CHECKS=0");
         Schema::dropIfExists('users');
+        DB::statement("SET FOREIGN_KEY_CHECKS=1");
     }
 }
