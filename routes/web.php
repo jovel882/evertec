@@ -12,11 +12,15 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
-});
-
-Auth::routes();
-
-Route::get('/home', function() {
     return view('home');
-})->name('home')->middleware('auth');
+})->name('home');
+
+Auth::routes([
+    'reset' => false,
+    'confirm' => false,
+    'verify' => false,
+]);
+
+Route::get('/orders', function() {
+    return "OK";
+})->name('orders.index');

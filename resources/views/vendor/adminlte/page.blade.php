@@ -86,7 +86,7 @@
                     <li class="nav-item">
                         <a class="nav-link" data-widget="pushmenu" href="#" @if(config('adminlte.sidebar_collapse_remember')) data-enable-remember="true" @endif @if(!config('adminlte.sidebar_collapse_remember_no_transition')) data-no-transition-after-reload="false" @endif @if(config('adminlte.sidebar_collapse_auto_size')) data-auto-collapse-size="{{config('adminlte.sidebar_collapse_auto_size')}}" @endif>
                             <i class="fas fa-bars"></i>
-                            <span class="sr-only">{{ __('adminlte::adminlte.toggle_navigation') }}</span>
+                            <span class="sr-only">{{ __('adminlte.toggle_navigation') }}</span>
                         </a>
                     </li>
                     @each('adminlte::partials.menu-item-top-nav', $adminlte->menu(), 'item')
@@ -126,7 +126,7 @@
                             <a class="nav-link" href="#"
                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
                             >
-                                <i class="fa fa-fw fa-power-off"></i> {{ __('adminlte::adminlte.log_out') }}
+                                <i class="fa fa-fw fa-power-off"></i> {{ __('adminlte.log_out') }}
                             </a>
                             <form id="logout-form" action="{{ $logout_url }}" method="POST" style="display: none;">
                                 @if(config('adminlte.logout_method'))
@@ -135,6 +135,17 @@
                                 {{ csrf_field() }}
                             </form>
                         </li>
+                    @else
+                        <li class="nav-item dropdown">
+                            <a class="nav-link" href="{{ route('login') }}">
+                                <i class="fa fa-fw fa-sign-in-alt"></i> {{ __('adminlte.sign_in') }}
+                            </a>                            
+                        </li>                        
+                        <li class="nav-item dropdown">
+                            <a class="nav-link" href="{{ route('register') }}">
+                                <i class="fa fa-fw fa-user-plus"></i> {{ __('adminlte.register') }}
+                            </a>                            
+                        </li>                        
                     @endif
                     @if(config('adminlte.right_sidebar'))
                         <li class="nav-item">
