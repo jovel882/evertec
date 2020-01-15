@@ -1,5 +1,7 @@
 @extends('adminlte::master')
 
+@section('title', __('adminlte.register'))
+
 @section('adminlte_css')
     @stack('css')
     @yield('css')
@@ -24,17 +26,20 @@
 @section('body')
     <div class="register-box">
         <div class="register-logo">
-            <a href="{{ $dashboard_url }}">{!! config('adminlte.logo', '<b>Admin</b>LTE') !!}</a>
+            <a href="{{ $dashboard_url }}" class="navbar-brand {{ config('adminlte.classes_brand') }}">
+                <img src="{{ asset(config('adminlte.logo_img', 'vendor/adminlte/dist/img/AdminLTELogo.png')) }}" alt="{{config('adminlte.logo_img_alt', 'AdminLTE')}}" class="brand-image img-circle elevation-3" style="opacity: .8">
+                {!! config('adminlte.logo', '<b>Admin</b>LTE') !!}
+            </a>
         </div>
         <div class="card">
             <div class="card-body register-card-body">
-            <p class="login-box-msg">{{ __('adminlte::adminlte.register_message') }}</p>
+            <p class="login-box-msg">{{ __('adminlte.register_message') }}</p>
             <form action="{{ $register_url }}" method="post">
                 {{ csrf_field() }}
 
                 <div class="input-group mb-3">
                     <input required type="text" name="name" class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}" value="{{ old('name') }}"
-                           placeholder="{{ __('adminlte::adminlte.full_name') }}" autofocus>
+                           placeholder="{{ __('adminlte.full_name') }}" autofocus>
                     <div class="input-group-append">
                         <div class="input-group-text">
                             <span class="fas fa-user"></span>
@@ -49,7 +54,7 @@
                 </div>
                 <div class="input-group mb-3">
                     <input required type="email" name="email" class="form-control {{ $errors->has('email') ? 'is-invalid' : '' }}" value="{{ old('email') }}"
-                           placeholder="{{ __('adminlte::adminlte.email') }}">
+                           placeholder="{{ __('adminlte.email') }}">
                     <div class="input-group-append">
                         <div class="input-group-text">
                             <span class="fas fa-envelope"></span>
@@ -63,7 +68,7 @@
                 </div>
                 <div class="input-group mb-3">
                     <input required type="tel" name="phone" pattern="\+?[1-9]\d{1,14}" class="form-control {{ $errors->has('phone') ? 'is-invalid' : '' }}" value="{{ old('phone') }}"
-                           placeholder="{{ __('adminlte::adminlte.phone') }}">
+                           placeholder="{{ __('adminlte.phone') }}">
                     <div class="input-group-append">
                         <div class="input-group-text">
                             <span class="fas fa-phone-square-alt"></span>
@@ -77,7 +82,7 @@
                 </div>
                 <div class="input-group mb-3">
                     <input required type="password" name="password" class="form-control {{ $errors->has('password') ? 'is-invalid' : '' }}"
-                           placeholder="{{ __('adminlte::adminlte.password') }}">
+                           placeholder="{{ __('adminlte.password') }}">
                     <div class="input-group-append">
                         <div class="input-group-text">
                             <span class="fas fa-lock"></span>
@@ -91,7 +96,7 @@
                 </div>
                 <div class="input-group mb-3">
                     <input required type="password" name="password_confirmation" class="form-control {{ $errors->has('password_confirmation') ? 'is-invalid' : '' }}"
-                           placeholder="{{ __('adminlte::adminlte.retype_password') }}">
+                           placeholder="{{ __('adminlte.retype_password') }}">
                     <div class="input-group-append">
                         <div class="input-group-text">
                             <span class="fas fa-lock"></span>
@@ -103,13 +108,13 @@
                         </div>
                     @endif
                 </div>
-                <button type="submit" class="btn btn-primary btn-block btn-flat">
-                    {{ __('adminlte::adminlte.register') }}
+                <button type="submit" class="btn btn-block btn-flat bg-orange margin">
+                    {{ __('adminlte.register') }}
                 </button>
             </form>
             <p class="mt-2 mb-1">
-                <a href="{{ $login_url }}">
-                    {{ __('adminlte::adminlte.i_already_have_a_membership') }}
+                <a href="{{ $login_url }}" class="text-orange">
+                    <i class="fa fa-fw fa-sign-in-alt"></i> {{ __('adminlte.i_already_have_a_membership') }}
                 </a>
             </p>
         </div>

@@ -48,4 +48,18 @@ class User extends Authenticatable
     {
         return $this->hasMany('App\Models\Order');
     }
+    public function getPermissions(){        
+        if (!\Session::has('permissions')) {
+            \Session::put('permissions', $this->getAllPermissions()->pluck('name')->toArray());
+        }
+
+        return \Session::get('permissions');
+    }    
+    public function getRoles(){        
+        if ( ! \Session::has('roles')) {
+            \Session::put('roles', $this->getRoleNames()->toArray());
+        }
+
+        return \Session::get('roles');
+    }    
 }

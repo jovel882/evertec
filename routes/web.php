@@ -12,11 +12,39 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
-});
-
-Auth::routes();
-
-Route::get('/home', function() {
     return view('home');
-})->name('home')->middleware('auth');
+})->name('home');
+
+Auth::routes([
+    'reset' => false,
+    'confirm' => false,
+    'verify' => false,
+]);
+
+Route::group(
+    [
+        'prefix' => 'orders', 
+        'middleware' => ['auth'],
+    ],
+    function() {
+        Route::get('/','OrderController@index')
+            ->name('orders.index');
+        Route::post('/','OrderController@store')
+            ->name('orders.store');            
+        Route::get('/{order}','OrderController@show')
+            ->where('order', '[0-9]+')
+            ->name('orders.show');
+    // Route::get('/{employee}/edit','EmployeeController@edit')
+    //     ->middleware(['permission:EmployeesEdit'])
+    //     ->where('employee', '[0-9]+')
+    //     ->name('employees.edit');
+    // Route::match(['put', 'patch'],'/{employee}','EmployeeController@update')
+    //     ->middleware(['permission:EmployeesEdit'])
+    //     ->where('employee', '[0-9]+')
+    //     ->name('employees.update');
+    // Route::delete('/{employee}','EmployeeController@destroy')
+    //     ->middleware(['permission:EmployeesDelete'])
+    //     ->where('employee', '[0-9]+')
+    //     ->name('employees.destroy');
+    }
+);
