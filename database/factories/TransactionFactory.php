@@ -9,6 +9,6 @@ $factory->define(Transaction::class, function (Faker $faker) {
     return [
         "order_id" => \App\Models\Order::inRandomOrder()->first()->id,
         "uuid" => $faker->uuid,
-        "current_status" => $faker->randomElement(config('config.order_status')),
+        "current_status" => $faker->randomElement(config('config.transaction_status')),
     ];
 });

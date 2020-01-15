@@ -121,7 +121,7 @@
                             <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
                         </div>
                     </li>                    
-                    @if(Auth::user())
+                    @auth
                         <li class="nav-item">
                             <a class="nav-link" href="#"
                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
@@ -135,7 +135,8 @@
                                 {{ csrf_field() }}
                             </form>
                         </li>
-                    @else
+                    @endauth
+                    @guest
                         <li class="nav-item dropdown">
                             <a class="nav-link" href="{{ route('login') }}">
                                 <i class="fa fa-fw fa-sign-in-alt"></i> {{ __('adminlte.sign_in') }}
@@ -146,7 +147,7 @@
                                 <i class="fa fa-fw fa-user-plus"></i> {{ __('adminlte.register') }}
                             </a>                            
                         </li>                        
-                    @endif
+                    @endguest
                     @if(config('adminlte.right_sidebar'))
                         <li class="nav-item">
                             <a class="nav-link" href="#" data-widget="control-sidebar" @if(!config('adminlte.right_sidebar_slide')) data-controlsidebar-slide="false" @endif @if(config('adminlte.right_sidebar_scrollbar_theme', 'os-theme-light') != 'os-theme-light') data-scrollbar-theme="{{config('adminlte.right_sidebar_scrollbar_theme')}}" @endif @if(config('adminlte.right_sidebar_scrollbar_auto_hide', 'l') != 'l') data-scrollbar-auto-hide="{{config('adminlte.right_sidebar_scrollbar_auto_hide')}}" @endif>

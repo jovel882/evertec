@@ -49,5 +49,21 @@ class LoginController extends Controller
         \Session::forget('permissions'); 
         $this->guard()->logout();
         return redirect('/');
+    }
+    /**
+     * Show the application's login form.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function showLoginForm()
+    {
+        // Get URLs
+        $urlPrevious = url()->previous();
+        $urlBase = url()->to('/');
+        // Set the previous url that we came from to redirect to after successful login but only if is internal
+        if(($urlPrevious != $urlBase . '/login') && (substr($urlPrevious, 0, strlen($urlBase)) === $urlBase)) {
+            session()->put('url.intended', $urlPrevious);
+        }
+        return view('auth.login');
     }    
 }
