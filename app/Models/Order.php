@@ -72,6 +72,7 @@ class Order extends Model
      * 
      * @param integer $id Id de la orden a buscar.
      * @param boolean $withTrash Indica si la busqueda se debe hacer con registros en la papelera o no.
+     * @return Order Modelo.
      */
     public function getById($id,$withTrash=false){
         $query = $this->with(["transactions" => function ($query) {
@@ -83,13 +84,29 @@ class Order extends Model
         return $query->first();
     }
     
+    /**
+     * Obtiene todas las ordenes.
+     * 
+     * @param boolean $withTrash Indica si la busqueda se debe hacer con registros en la papelera o no, junto con unicamente los propios o todos.
+     * @return Collection Coleccion con los modelos encontrados.
+     */    
     public function getAll($withTrash=false){
-        $query=$this->with("user");
+        $query = $this->with("user");
         if($withTrash){
-            $query=$query->withTrashed();
+            $query = $query->withTrashed();
         } else {
             $query = $query->own();
         }
         return $query->get();
+    }    
+
+    /**
+     * Obtiene la ultima transaccion de la orden.
+     *      
+     * @return Transaction Modelo con la transaccion.
+     */    
+    public function getLastTransaction(){
+        return $this->transactions()
+            ->orderBy('created_at', 'desc')->first();        
     }    
 }

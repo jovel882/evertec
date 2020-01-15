@@ -31,7 +31,7 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $viewAny = \Gate::allows('viewAny', Order::class);        
+        $viewAny = \Gate::allows('viewAny', Order::class);
         $orders = $this->order->getAll($viewAny);
         return view("web.orders.list",compact("orders","viewAny"));
     }
@@ -49,8 +49,8 @@ class OrderController extends Controller
             'status' => 'CREATED',
             'user_id' => auth()->user()->id,
         ]);
-        if ($company = $this->order->store($request->all())) {
-            return redirect()->route("orders.show", ['order' => $company->id]);
+        if ($order = $this->order->store($request->all())) {
+            return redirect()->route("orders.show", ['order' => $order->id]);
         } else{
             $errors = new \Illuminate\Support\MessageBag();
             $errors->add('msg_0', "Se genero un error almacenando la orden.");
@@ -66,18 +66,44 @@ class OrderController extends Controller
      */
     public function show($idOrder)
     {
-        $order = $this->order->getById(
-            $idOrder,
-            \Gate::allows('viewAny', Order::class)
-        );
+        $viewAny = \Gate::allows('viewAny', Order::class);
+        $order = $this->order->getById($idOrder, $viewAny);
         if ($order) {
             if (\Gate::allows('view',$order)) {            
-                return view("web.orders.view",compact("order"));
+                return view("web.orders.view",compact("order","viewAny"));
             } else {
                 abort(403);
             }
         } else {
             abort(404);
         }
+    }
+
+    /**
+     * Inicial un pago.
+     *
+     * @param  Order  Modelo para pagar.
+     * @return \Illuminate\Http\Response
+     */
+    public function pay(Order $order)
+    {                
+        if (\Gate::allows('pay',$order)) {            
+            if ($order->status == 'CREATED') {
+                $transaction = $order->getLastTransaction();
+                if (!$transaction || ($transaction->current_status != "PENDING" && $transaction->current_status != "CREATED"))  {
+                    dd("Crea una nueva");
+                } else{
+                    if ($transaction->current_status == "CREATED") {
+                        return redirect($transaction->url??"");
+                    } else{
+                        return redirect()->route("orders.show", ['order' => $order->id]);    
+                    }
+                }                
+            } else {
+                return redirect()->route("orders.show", ['order' => $order->id]);    
+            }
+        } else {
+            abort(403);
+        }        
     }
 }

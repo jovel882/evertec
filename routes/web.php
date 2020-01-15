@@ -31,20 +31,11 @@ Route::group(
             ->name('orders.index');
         Route::post('/','OrderController@store')
             ->name('orders.store');            
-        Route::get('/{order}','OrderController@show')
+            Route::get('/{order}','OrderController@show')
             ->where('order', '[0-9]+')
             ->name('orders.show');
-    // Route::get('/{employee}/edit','EmployeeController@edit')
-    //     ->middleware(['permission:EmployeesEdit'])
-    //     ->where('employee', '[0-9]+')
-    //     ->name('employees.edit');
-    // Route::match(['put', 'patch'],'/{employee}','EmployeeController@update')
-    //     ->middleware(['permission:EmployeesEdit'])
-    //     ->where('employee', '[0-9]+')
-    //     ->name('employees.update');
-    // Route::delete('/{employee}','EmployeeController@destroy')
-    //     ->middleware(['permission:EmployeesDelete'])
-    //     ->where('employee', '[0-9]+')
-    //     ->name('employees.destroy');
+        Route::get('{order}/pay','OrderController@pay')
+            ->where('order', '[0-9]+')
+            ->name('orders.pay');
     }
 );

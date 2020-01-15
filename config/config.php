@@ -10,7 +10,7 @@ return [
     | Especifica los estados posibles de las ordenes.
     | CREATED = La orden esta creada. 
     | PAYED = La orden esta pagada. 
-    | REJECTED = La orden esta rechazada. 
+    | REJECTED = La orden esta rechazada por tiempo. 
     |
     */
 
