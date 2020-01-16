@@ -6,8 +6,6 @@ use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Http\Requests\StoreOrder;
 use App\Strategies\Pay\Context;
-use App\Strategies\Pay\PlaceToPay;
-use App\Strategies\Pay\JohnTest;
 
 class OrderController extends Controller
 {
@@ -16,14 +14,7 @@ class OrderController extends Controller
      *
      * @var Order
      */    
-    protected $order;
-    /**
-     * @var array $paymentMethodsEnable Metodos de pagos habilitados.
-     */   
-    protected $paymentMethodsEnable=[
-        "place_to_pay" => PlaceToPay::class,
-        "john_test" => JohnTest::class,
-    ];    
+    protected $order;    
     /**
      * Constructor de la clase.
      *
@@ -32,7 +23,7 @@ class OrderController extends Controller
      */
     public function __construct(Order $order)
     {
-        $this->order=$order;
+        $this->order = $order;
     }    
     /**
      * Display a listing of the resource.
@@ -107,8 +98,20 @@ class OrderController extends Controller
         
         $transaction = $order->getLastTransaction();
         if (!$transaction || ($transaction->current_status != "PENDING" && $transaction->current_status != "CREATED"))  {
-            Context::create(new $this->paymentMethodsEnable["place_to_pay"])
-                ->pay($order);
+            $strategy = Context::create('place_to_pay');
+            if (!$strategy) {
+                $errors = new \Illuminate\Support\MessageBag();
+                $errors->add('msg_0', "El metodo de pago no esta soportado.");
+                return redirect()->route("orders.show", ['order' => $order->id])->withInput()->withErrors($errors);                
+            }
+            $response = $strategy->pay($order);
+            if (! $response->success) {
+                $errors = new \Illuminate\Support\MessageBag();
+                $errors->add('msg_0', "Se genero un error al crear la transacion.");
+                $errors->add('msg_1', $response->exception->getMessage());
+                return redirect()->route("orders.show", ['order' => $order->id])->withInput()->withErrors($errors);                
+            }
+            return redirect($response->url);
         } else{
             if ($transaction->current_status != "CREATED") {
                 return redirect()->route("orders.show", ['order' => $order->id]);

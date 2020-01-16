@@ -62,7 +62,6 @@ class Order extends Model
         try {
             return $this->create($data);
         } catch (\Illuminate\Database\QueryException $exception) {
-            dd($exception);
             return false;  
         }
     }

@@ -58,7 +58,7 @@ return [
     | PAYED = La transaccion esta pagada. 
     | PENDING = La transaccion esta pendiente por la entidad. 
     | REJECTED = La transaccion esta rechazada. 
-    | EXPIRED = La transaccion esta expirada. 
+    | REFUNDED = Reintegro de una transacción por solicitud de un tarjetahabiente al comercio. 
     |
     */
 
@@ -69,7 +69,7 @@ return [
             "PAYED",
             "PENDING",
             "REJECTED",
-            "EXPIRED",
+            "REFUNDED",
         ]
     ),
     /*

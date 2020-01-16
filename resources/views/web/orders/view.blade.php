@@ -10,7 +10,51 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-body">                    
+                <div class="card-body">
+                    @if(count( $errors ) > 0)
+                        <div class="alert alert-danger alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true"><i class="fa fa-fw fa-times-circle"></i></button>
+                            @foreach ($errors->all() as $error)
+                                <div style="margin-bottom: 1em;">
+                                    <i class="fa fa-fw fa-exclamation-circle"></i> {{ $error }}
+                                </div>
+                            @endforeach
+                        </div>                                                                    
+                    @endif
+                    @if(session('update'))
+                        @php
+                            switch (session('update')['status']) {
+                                case 'PAYED':
+                                    $class = 'success';
+                                    $icon = 'thumbs-up';
+                                    break;
+                                case 'PENDING':
+                                    $class = 'warning';
+                                    $icon = 'hourglass-half';
+                                    break;
+                                case 'REJECTED':
+                                    $class = 'danger';
+                                    $icon = 'times-circle';
+                                    break;                                
+                                case 'REFUNDED':
+                                    $class = 'danger';
+                                    $icon = 'history';
+                                    break;                                
+                                default:
+                                    $class = 'info';
+                                    $icon = 'plus-circle';
+                                    break;
+                            }
+                        @endphp
+                        <div class="alert alert-{{ $class }} alert-dismissible"> 
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true"><i class="fa fa-fw fa-times-circle"></i></button>
+                            <h5>{{ session('update')['status'] }}</h5>
+                            <i class="fa fa-fw fa-{{ $icon }}"></i> El estado de esta transaccion es {{ session('update')['status'] }}.
+                            <div style="margin-bottom: 1em;">
+                                Esta es la razon:  {{ session('update')['message'] }}
+                            </div> 
+                        </div>    
+                    @endif                                                            
                     <div class="card">
                         <div class="card-header bg-gradient-orange">
                             <h3 class="card-title"><i class="icon fas fa-receipt"></i> Detalle de la Orden</h3>

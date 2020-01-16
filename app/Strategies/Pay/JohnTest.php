@@ -11,4 +11,3 @@ class JohnTest implements Strategy
         return "JohnTest";        
     }
 }
-?>
