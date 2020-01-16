@@ -89,5 +89,23 @@ class Transaction extends Model
         } catch (\Illuminate\Database\QueryException $exception) {
             return false;  
         }
-    }        
+    }
+    /**
+     * Obtiene una transaccion por el uuid requerido.
+     * 
+     * @param string $uuid Uuid de la transaccion a buscar.
+     * @return Transaction Modelo.
+     */
+    public static function getTransactionsPendings(array $status){
+        return self::with(
+            [
+                "transaction_states" => function ($query) {
+                    $query->orderBy('created_at', 'desc');
+                },
+                'order'
+            ]
+        )->whereIn('current_status', $status)
+            ->whereNotNull('requestId')
+            ->first();
+    }            
 }

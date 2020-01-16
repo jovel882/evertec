@@ -14,8 +14,8 @@ class PlaceToPay extends PlacetoPayLib implements Strategy
 
     /**
      * @var array $statusMap Estados mapeados.
-     */   
-    public  $statusMap;    
+     */
+    public $statusMap;
 
     public function __construct()
     {
@@ -28,7 +28,8 @@ class PlaceToPay extends PlacetoPayLib implements Strategy
         );
         $this->mapStatus();
     }
-    public function mapStatus(){
+    public function mapStatus()
+    {
         $statusMap=&$this->statusMap;
         array_map(function ($state) use (&$statusMap) {
             switch ($state) {
@@ -43,16 +44,16 @@ class PlaceToPay extends PlacetoPayLib implements Strategy
                 case 'REFUNDED':
                     $statusMap[$state] = "REFUNDED";
                     break;
-                case 'PENDING_VALIDATION':                    
+                case 'PENDING_VALIDATION':
                 case 'PENDING':
                     $statusMap[$state] = "PENDING";
                     break;
                 default:
                     $statusMap[$state] = "CREATED";
                     break;
-            }            
-        },Status::validStatus());        
-    }              
+            }
+        }, Status::validStatus());
+    }
     public function pay(Order $order)
     {
         \DB::beginTransaction();
@@ -63,7 +64,7 @@ class PlaceToPay extends PlacetoPayLib implements Strategy
             $request = $this->getRequestData($order, $reference, $uuid);
             $response = $this->request($request);
 
-            if( ! $response->isSuccessful()){
+            if (! $response->isSuccessful()) {
                 throw new \Exception("Se genero un error al crear la transaccion en placetopay (".$response->status()->message().").");
             }
             
@@ -74,10 +75,11 @@ class PlaceToPay extends PlacetoPayLib implements Strategy
                 'reference' => $reference,
                 'url' => $response->processUrl(),
                 'requestId' => $response->requestId(),
+                'gateway' => 'place_to_pay',
             ]);
 
             if (! $transaction) {
-                throw new \Exception("Se genero un error al almacenar la transaccion.");                    
+                throw new \Exception("Se genero un error al almacenar la transaccion.");
             }
                                             
             if (! $transaction->attachStates(
@@ -95,15 +97,15 @@ class PlaceToPay extends PlacetoPayLib implements Strategy
             return (object) [
                 'success' => true,
                 'url' => $response->processUrl(),
-            ];            
+            ];
         } catch (\Exception $e) {
             \Log::info($e->getMessage());
             \DB::rollback();
             return (object) [
                 'success' => false,
                 'exception' => $e,
-            ];            
-        }                       
+            ];
+        }
     }
     public function getInfoPay(Transaction $transaction)
     {
@@ -113,7 +115,7 @@ class PlaceToPay extends PlacetoPayLib implements Strategy
             $transaction_states = $transaction->transaction_states->first();
 
             $status = $this->getStatus($response);
-            if(!$status){
+            if (!$status) {
                 throw new \Exception("El estado recibido no se identifica.");
             }
             if ($transaction_states && $transaction_states->status != $status) {
@@ -133,12 +135,12 @@ class PlaceToPay extends PlacetoPayLib implements Strategy
                     ]
                 )) {
                     throw new \Exception("Se genero un error al almacenar el estado de la transaccion.");
-                }                                                                
+                }
             }
             return (Object) [
                 "success" => true,
                 "data" => [
-                    "status" => $response->status()->status(),
+                    "status" => $this->getStatus($response),
                     "message" => $response->status()->message(),
                 ]
             ];
@@ -157,9 +159,9 @@ class PlaceToPay extends PlacetoPayLib implements Strategy
         
         return $this->statusMap[$response->status()->status()];
     }
-    private function getRequestData(Order $order, $reference, $uuid): Array
+    private function getRequestData(Order $order, $reference, $uuid): array
     {
-        $urlRecive = route("transactions.receive",["gateway" => "place_to_pay",'uuid' => $uuid]);
+        $urlRecive = route("transactions.receive", ["gateway" => "place_to_pay",'uuid' => $uuid]);
         return [
             "locale" => "es_CO",
             "buyer" => $this->getBuyer(),
@@ -180,13 +182,13 @@ class PlaceToPay extends PlacetoPayLib implements Strategy
                     [
                         "name" => config('config.product_name'),
                         "price" => config('config.product_price')
-                    ]                    
+                    ]
                 ],
                 "allowPartial" => false,
             ],
             "expiration" => \Carbon\Carbon::now()->addMinutes(
                 config('config.expired_minutes_PTP')
-                )->format("c"),
+            )->format("c"),
             "ipAddress" => request()->ip(),
             "userAgent" => request()->header('user-agent'),
             "returnUrl" => $urlRecive,
@@ -197,14 +199,14 @@ class PlaceToPay extends PlacetoPayLib implements Strategy
             "paymentMethod" => null
         ];
     }
-    private function getBuyer(): Array
+    private function getBuyer(): array
     {
         $user = auth()->user();
 
         return [
             "name" => $user->name,
             "email" => $user->email,
-            "mobile" => $user->phone,            
+            "mobile" => $user->phone,
         ];
-    }    
+    }
 }
