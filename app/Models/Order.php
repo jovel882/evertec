@@ -32,9 +32,9 @@ class Order extends Model
     }
 
     /**
-    * Relacion con el usuario.
+    * Accesor para el nombre del usuario.
     *
-    * @return Relacion.
+    * @return string Nombre.
     */    
     public function getNameUserAttribute()
     {

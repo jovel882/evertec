@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Http\Requests\StoreOrder;
+use App\Strategies\Pay\Context;
+use App\Strategies\Pay\PlaceToPay;
+use App\Strategies\Pay\JohnTest;
 
 class OrderController extends Controller
 {
@@ -14,6 +17,13 @@ class OrderController extends Controller
      * @var Order
      */    
     protected $order;
+    /**
+     * @var array $paymentMethodsEnable Metodos de pagos habilitados.
+     */   
+    protected $paymentMethodsEnable=[
+        "place_to_pay" => PlaceToPay::class,
+        "john_test" => JohnTest::class,
+    ];    
     /**
      * Constructor de la clase.
      *
@@ -80,30 +90,30 @@ class OrderController extends Controller
     }
 
     /**
-     * Inicial un pago.
+     * Iniciar un pago.
      *
      * @param  Order  Modelo para pagar.
      * @return \Illuminate\Http\Response
      */
     public function pay(Order $order)
-    {                
-        if (\Gate::allows('pay',$order)) {            
-            if ($order->status == 'CREATED') {
-                $transaction = $order->getLastTransaction();
-                if (!$transaction || ($transaction->current_status != "PENDING" && $transaction->current_status != "CREATED"))  {
-                    dd("Crea una nueva");
-                } else{
-                    if ($transaction->current_status == "CREATED") {
-                        return redirect($transaction->url??"");
-                    } else{
-                        return redirect()->route("orders.show", ['order' => $order->id]);    
-                    }
-                }                
-            } else {
-                return redirect()->route("orders.show", ['order' => $order->id]);    
-            }
-        } else {
+    {
+        if (\Gate::denies('pay',$order)) {
             abort(403);
-        }        
+        }
+
+        if ($order->status != 'CREATED') {
+            return redirect()->route("orders.show", ['order' => $order->id]);
+        }                    
+        
+        $transaction = $order->getLastTransaction();
+        if (!$transaction || ($transaction->current_status != "PENDING" && $transaction->current_status != "CREATED"))  {
+            Context::create(new $this->paymentMethodsEnable["place_to_pay"])
+                ->pay($order);
+        } else{
+            if ($transaction->current_status != "CREATED") {
+                return redirect()->route("orders.show", ['order' => $order->id]);
+            }            
+            return redirect($transaction->url??"");            
+        }                                   
     }
 }

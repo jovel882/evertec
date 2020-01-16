@@ -39,3 +39,14 @@ Route::group(
             ->name('orders.pay');
     }
 );
+Route::group(
+    [
+        'prefix' => 'transactions', 
+        'middleware' => ['auth'],
+    ],
+    function() {
+        Route::any('/receive/{gateway}/{uuid}','OrderController@index')
+            ->where('uuid', '[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}')
+            ->name('transactions.receive');        
+    }
+);

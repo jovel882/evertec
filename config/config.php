@@ -71,5 +71,18 @@ return [
             "REJECTED",
             "EXPIRED",
         ]
-    ),        
+    ),
+    /*
+    |--------------------------------------------------------------------------
+    | Minutos para expirar la transaccion en placetopay.
+    |--------------------------------------------------------------------------
+    |
+    | Especifica la cantidad de minutos para expirar la transaccion.
+    |
+    */
+
+    'expired_minutes_PTP' => env(
+        'EXPIRED_MINUTES_PTP',
+        60
+    ),            
 ];
