@@ -2,7 +2,7 @@
 
 @section('title', __('page.home.title'))
 
-@section('sidebar_collapse', true)
+@section('layout_topnav', true)
 
 @section('content_header')
     <h1 class="m-0 text-dark"><i class="icon fas fa-home"></i> Home</h1>
@@ -13,7 +13,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <form action="{{ route('orders.store') }}" method="post" novalidate>
+                    <form action="{{ route('orders.store') }}" method="post">
                         {{ csrf_field() }}
                         <div class="card">
                             <div class="card-header bg-gradient-orange">
