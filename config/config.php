@@ -103,7 +103,7 @@ return [
     | Minutos para ejecutar la validacion de estado de los pagos.
     |--------------------------------------------------------------------------
     |
-    | Especifica cada cuantos minutos se ejecuta la validacion de estado de los pagos.
+    | Especifica cada cuantos minutos se ejecuta la validacion de estado de los pagos, no debe sobrepasar los 60.
     |
     */
 
@@ -111,4 +111,32 @@ return [
         'MINUTES_VERIFY_PAY',
         5
     ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Dias para expirar las ordenes.
+    |--------------------------------------------------------------------------
+    |
+    | Especifica la cantidad de dias para expirar la orden.
+    |
+    */
+
+    'expired_days_order' => env(
+        'EXPIRED_DAYS_ORDER',
+        1
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Hora para expirar las ordenes.
+    |--------------------------------------------------------------------------
+    |
+    | Especifica la hora del dia en la que se ejecuta la expiracion de ordenes debe estar en formato de hora y minutos ejemplo a las 7 de la noche seria 19:00, y a las 7 de la mañana seria 07:00 .
+    |
+    */
+
+    'time_expired_orders' => env(
+        'TIME_EXPIRED_ORDERS',
+        '01:01'
+    ),    
 ];
