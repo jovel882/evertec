@@ -24,8 +24,14 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')
-        //          ->hourly();
+        $schedule->command('process:pay')
+            ->cron("*/".config('config.minutes_verify_pay')." * * * *")
+            ->withoutOverlapping()
+            ->timezone('America/Bogota');
+        $schedule->command('create:emails-operative')
+            ->dailyAt(config('config.time_expired_orders'))
+            ->withoutOverlapping()
+            ->timezone('America/Bogota');            
     }
 
     /**
