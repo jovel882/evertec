@@ -50,3 +50,14 @@ Route::group(
             ->name('transactions.receive');        
     }
 );
+Route::get('/notification/unread/{id}', function ($id) {
+    $notification = auth()->user()->notifications()->find($id);
+    $notification->markAsRead();
+    return redirect($notification->data['url']);
+})->name('notification.unread');
+
+Route::get('mail/{id}', function ($id) {
+    $order = App\Models\Order::findOrFail($id);
+    return (new App\Notifications\OrderCreated($order))
+                ->toMail($order->user);
+})->where('id', '[0-9]+');

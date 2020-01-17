@@ -4,12 +4,22 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Events\CreateOrder;
 
 class Order extends Model
 {
     use SoftDeletes;
+
     protected $dates = ['deleted_at'];    
     protected $guarded = ['id'];
+    /**
+     * The event map for the model.
+     *
+     * @var array
+     */
+    protected $dispatchesEvents = [
+        'created' => CreateOrder::class,
+    ];
 
     /**
     * Relacion con las transacciones.
@@ -39,6 +49,16 @@ class Order extends Model
     public function getNameUserAttribute()
     {
         return $this->user->name;
+    }
+
+    /**
+    * Accesor para el el total formateado.
+    *
+    * @return string Nombre.
+    */    
+    public function getTotalFormatAttribute()
+    {
+        return '$'.number_format($this->total, 2, ',', '.');
     }
 
     /**

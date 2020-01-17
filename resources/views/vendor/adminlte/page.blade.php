@@ -94,34 +94,30 @@
                 </ul>
             @endif
                 <ul class="navbar-nav ml-auto @if(config('adminlte.layout_topnav') || View::getSection('layout_topnav'))order-1 order-md-3 navbar-no-expand @endif">
-                    @yield('content_top_nav_right')
-                    <li class="nav-item dropdown">
-                        <a class="nav-link" data-toggle="dropdown" href="#">
-                            <i class="far fa-bell"></i>
-                            <span class="badge badge-warning navbar-badge">15</span>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                            <span class="dropdown-item dropdown-header">15 Notifications</span>
-                            <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item">
-                                <i class="fas fa-envelope mr-2"></i> 4 new messages
-                                <span class="float-right text-muted text-sm">3 mins</span>
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item">
-                                <i class="fas fa-users mr-2"></i> 8 friend requests
-                                <span class="float-right text-muted text-sm">12 hours</span>
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item">
-                                <i class="fas fa-file mr-2"></i> 3 new reports
-                                <span class="float-right text-muted text-sm">2 days</span>
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
-                        </div>
-                    </li>                    
+                    @yield('content_top_nav_right')                                        
                     @auth
+                        @php($notifications = auth()->user()->unreadNotifications ?? null)
+                        <li class="nav-item dropdown">
+                            <a class="nav-link" data-toggle="dropdown" href="#">
+                                <i class="far fa-bell"></i>
+                                @if( isset($notifications) && $notifications->count()>0)
+                                    <span class="badge badge-warning navbar-badge">{{ $notifications->count() }}</span>
+                                @endisset
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                                <span class="dropdown-item dropdown-header">{{ isset($notifications)?$notifications->count():0 }} Notificaciones</span>
+                                <div class="dropdown-divider"></div>
+                                @isset($notifications)
+                                    @foreach ($notifications->take(5) as $notification)
+                                        <a href="{{ route('notification.unread', ['id' => $notification->id]) }}" class="dropdown-item text-xs">
+                                            <i class="fas fa-{{ $notification->data['icon'] }} mr-2"></i> {{ $notification->data['message_left'] }}
+                                            <span class="float-right text-muted">{{ $notification->data['message_right'] }}</span>
+                                        </a>
+                                        <div class="dropdown-divider"></div>
+                                    @endforeach
+                                @endisset                            
+                            </div>
+                        </li>                    
                         <li class="nav-item">
                             <a class="nav-link" href="#"
                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();"

@@ -98,8 +98,11 @@
         $(document).ready(function() {
             $('[data-toggle="tooltip"]').tooltip();
             $('#quantity').change(function() {
-                $("#total").html('$ '+(price * $(this).val()));
+                $("#total").html('$ '+ currencyFormat(price * $(this).val()));
             } );
-        });        
+        });
+        function currencyFormat(num) {
+            return num.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+        }                
     </script>    
 @endpush
