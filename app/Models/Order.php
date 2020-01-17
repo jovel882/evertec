@@ -58,7 +58,8 @@ class Order extends Model
      * @param  array $data Datos para almacenar la orden.
      * @return Order|false Modelo con la orden nueva o un estado false si hay algun error.
      */
-    public function store($data){
+    public function store($data)
+    {
         try {
             return $this->create($data);
         } catch (\Illuminate\Database\QueryException $exception) {
@@ -73,7 +74,8 @@ class Order extends Model
      * @param boolean $withTrash Indica si la busqueda se debe hacer con registros en la papelera o no.
      * @return Order Modelo.
      */
-    public function getById($id,$withTrash=false){
+    public function getById($id,$withTrash=false)
+    {
         $query = $this->with(["transactions" => function ($query) {
             $query->orderBy('created_at', 'desc');
         }])->where("id", $id);
@@ -89,7 +91,8 @@ class Order extends Model
      * @param boolean $withTrash Indica si la busqueda se debe hacer con registros en la papelera o no, junto con unicamente los propios o todos.
      * @return Collection Coleccion con los modelos encontrados.
      */    
-    public function getAll($withTrash=false){
+    public function getAll($withTrash=false)
+    {
         $query = $this->with("user");
         if($withTrash){
             $query = $query->withTrashed();
@@ -104,8 +107,38 @@ class Order extends Model
      *      
      * @return Transaction Modelo con la transaccion.
      */    
-    public function getLastTransaction(){
+    public function getLastTransaction()
+    {
         return $this->transactions()
             ->orderBy('created_at', 'desc')->first();        
     }    
+
+    /**
+     * Obtiene las ordenes que tengan la diferencia en dias especificada entre la creacion y la fecha actual, junto con los estados especificados.
+     * 
+     * @param integer $days Dias de diferencia.
+     * @param array $status Estados de la orden.
+     * @return Collection Coleccion con los Modelos.
+     */    
+    public static function getByDiferenceDaysWithCreateAndStates($days, $status)
+    {
+        return self::whereRaw("DATEDIFF('".date('Y-m-d H:i:s')."', orders.created_at) >= ".$days)
+            ->whereIn('status', $status)
+            ->get();
+    }
+
+    /**
+     * Actualiza una orden.
+     *
+     * @param  array $data Datos para actualizar la orden.
+     * @return Order|false Modelo con la orden.
+     */
+    public function edit($data)
+    {
+        try {
+            return $this->fill($data)->save();
+        } catch (\Illuminate\Database\QueryException $exception) {
+            return false;
+        }
+    }        
 }
