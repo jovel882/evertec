@@ -45,18 +45,6 @@ class OrderPolicy
     }    
 
     /**
-     * Determina si el usuario puede pagar la orden.
-     *
-     * @param  \App\User  $user Usuario.
-     * @param  \App\Models\Order  $order Orden.
-     * @return mixed
-     */
-    public function pay(User $user, Order $order)
-    {
-        return $user->id == $order->user_id;
-    }    
-
-    /**
      * Determine whether the user can update the order.
      *
      * @param  \App\User  $user

@@ -9,7 +9,6 @@
     "license": "MIT",
     "require": {
         "php": "^7.2",
-        "dnetix/redirection": "^1.0",
         "fideloper/proxy": "^4.0",
         "jeroennoten/laravel-adminlte": "^3.0",
         "laravel/framework": "^6.2",

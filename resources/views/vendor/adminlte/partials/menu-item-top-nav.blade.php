@@ -1,4 +1,4 @@
-@if(config('adminlte.layout_topnav') || View::getSection('layout_topnav') || (isset($item['topnav']) && $item['topnav']))
+@if(config('adminlte.layout_topnav') or (isset($item['topnav']) && $item['topnav']))
   @if (isset($item['search']) && $item['search'])
       <form action="{{ $item['href'] }}" method="{{ $item['method'] }}" class="form-inline ml-2 mr-2">
         <div class="input-group">

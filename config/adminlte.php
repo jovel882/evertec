@@ -74,7 +74,7 @@ return [
     'classes_sidebar' => 'sidebar-dark-orange elevation-4',
     'classes_sidebar_nav' => 'flex-column nav-child-indent nav-compact text-sm',
     'classes_topnav' => 'navbar-orange navbar-light',
-    'classes_topnav_nav' => 'navbar-expand-md',
+    'classes_topnav_nav' => 'navbar-expand',
     'classes_topnav_container' => 'container',
 
     /*

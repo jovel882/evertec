@@ -27,7 +27,7 @@ class StoreOrder extends FormRequest
     public function rules()
     {
         return [
-            "quantity"=>"required|integer|between:1,100",
+            "quantity"=>"required|integer|between:1,100",            
         ];
     }
 }
