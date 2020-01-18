@@ -8,7 +8,7 @@ use Dnetix\Redirection\PlacetoPay as PlacetoPayLib;
 use Dnetix\Redirection\Entities\Status;
 use App\Traits\PaymentTrait;
 
-class PlaceToPay extends PlacetoPayLib implements Strategy
+class PlaceToPay implements Strategy
 {
     use PaymentTrait;
 
@@ -16,19 +16,17 @@ class PlaceToPay extends PlacetoPayLib implements Strategy
      * @var array $statusMap Estados mapeados.
      */
     public $statusMap;
+    /**
+     * @var PlacetoPayLib $placeToPay Objeto place to pay.
+     */
+    public $placeToPay;
 
-    public function __construct()
+    public function __construct(PlacetoPayLib $placeToPay)
     {
-        parent::__construct(
-            [
-            'login' => env('PLACE_TO_PAY_LOGIN'),
-            'tranKey' => env('PLACE_TO_TRAN_KEY'),
-            'url' => env('PLACE_TO_TRAN_URL'),
-            ]
-        );
+        $this->placeToPay = $placeToPay;
         $this->mapStatus();
     }
-    public function mapStatus()
+    private function mapStatus()
     {
         $statusMap=&$this->statusMap;
         array_map(function ($state) use (&$statusMap) {
@@ -62,7 +60,7 @@ class PlaceToPay extends PlacetoPayLib implements Strategy
             $uuid = $this->getUuid();
             $reference = $this->getReference($order->id);
             $request = $this->getRequestData($order, $reference, $uuid);
-            $response = $this->request($request);
+            $response = $this->placeToPay->request($request);
 
             if (! $response->isSuccessful()) {
                 throw new \Exception("Se genero un error al crear la transaccion en placetopay (".$response->status()->message().").");
@@ -110,7 +108,7 @@ class PlaceToPay extends PlacetoPayLib implements Strategy
     public function getInfoPay(Transaction $transaction)
     {
         try {
-            $response = $this->query($transaction->requestId);
+            $response = $this->placeToPay->query($transaction->requestId);
 
             $transaction_states = $transaction->transaction_states->first();
 
@@ -176,7 +174,7 @@ class PlaceToPay extends PlacetoPayLib implements Strategy
                             "kind" => "iva",
                             "amount" => 0.00
                         ]
-                    ]
+                    ] 
                 ],
                 "items" => [
                     [

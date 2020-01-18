@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Http\Requests\StoreOrder;
-use App\Strategies\Pay\Context;
+use Facades\App\Payment;
 
 class OrderController extends Controller
 {
@@ -97,26 +97,32 @@ class OrderController extends Controller
         }                    
         
         $transaction = $order->getLastTransaction();
-        if (!$transaction || ($transaction->current_status != "PENDING" && $transaction->current_status != "CREATED"))  {
-            $strategy = Context::create('place_to_pay');
-            if (!$strategy) {
-                $errors = new \Illuminate\Support\MessageBag();
-                $errors->add('msg_0', "El metodo de pago no esta soportado.");
-                return redirect()->route("orders.show", ['order' => $order->id])->withInput()->withErrors($errors);                
+        if (! $transaction || ($transaction->current_status != "PENDING" && $transaction->current_status != "CREATED"))  {
+            $response = Payment::pay('place_to_pay',$order);
+            if (! $response) {
+                return redirect()
+                    ->route("orders.show", ['order' => $order->id])
+                    ->withInput()
+                    ->withErrors(new \Illuminate\Support\MessageBag([
+                        'msg_0' => 'El metodo de pago no esta soportado.'
+                    ]));                
             }
-            $response = $strategy->pay($order);
+
             if (! $response->success) {
-                $errors = new \Illuminate\Support\MessageBag();
-                $errors->add('msg_0', "Se genero un error al crear la transacion.");
-                $errors->add('msg_1', $response->exception->getMessage());
-                return redirect()->route("orders.show", ['order' => $order->id])->withInput()->withErrors($errors);                
+                return redirect()
+                    ->route("orders.show", ['order' => $order->id])
+                    ->withInput()
+                    ->withErrors(new \Illuminate\Support\MessageBag([
+                        'msg_0' => 'Se genero un error al crear la transacion.',
+                        'msg_1' => $response->exception->getMessage()
+                    ]));                
             }
             return redirect($response->url);
         } else{
             if ($transaction->current_status != "CREATED") {
                 return redirect()->route("orders.show", ['order' => $order->id]);
             }            
-            return redirect($transaction->url??"");            
+            return redirect($transaction->url ?? "");            
         }                                   
     }
 }

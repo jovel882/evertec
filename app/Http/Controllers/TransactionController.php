@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Transaction;
-use App\Strategies\Pay\Context;
+use Facades\App\Payment;
 
 class TransactionController extends Controller
 {
@@ -53,23 +53,23 @@ class TransactionController extends Controller
      */
     public static function updateStatus(Transaction $transaction)
     {
-        $strategy = Context::create($transaction->gateway);
-        if (!$strategy) {
-            $errors = new \Illuminate\Support\MessageBag();
-            $errors->add('msg_0', "El metodo de pago no esta soportado.");
+        $response = Payment::getInfoPay($transaction);
+        if (! $response) {
             return [
                 'success' => false,
-                'data' => $errors,
+                'data' => new \Illuminate\Support\MessageBag([
+                    'msg_0' => 'El metodo de pago no esta soportado.',
+                ]),
             ];
         }
-        $response = $strategy->getInfoPay($transaction);
+        
         if (! $response->success) {
-            $errors = new \Illuminate\Support\MessageBag();
-            $errors->add('msg_0', "Se genero un error al actualizar la transacion.");
-            $errors->add('msg_1', $response->exception->getMessage());
             return [
                 'success' => false,
-                'data' => $errors,
+                'data' => new \Illuminate\Support\MessageBag([
+                    'msg_0' => 'Se genero un error al actualizar la transacion.',
+                    'msg_1' => $response->exception->getMessage()
+                ]),
             ];
         }
         return [
