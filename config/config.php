@@ -138,5 +138,5 @@ return [
     'time_expired_orders' => env(
         'TIME_EXPIRED_ORDERS',
         '01:01'
-    ),    
+    ),
 ];

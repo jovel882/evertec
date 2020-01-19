@@ -31,7 +31,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('create:emails-operative')
             ->dailyAt(config('config.time_expired_orders'))
             ->withoutOverlapping()
-            ->timezone('America/Bogota');            
+            ->timezone('America/Bogota');
     }
 
     /**

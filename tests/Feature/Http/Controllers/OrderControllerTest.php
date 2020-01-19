@@ -22,7 +22,6 @@ class OrderControllerTest extends TestCase
     }
 
     /**
-     * 
      *
      * @test
      * @return void
@@ -38,7 +37,6 @@ class OrderControllerTest extends TestCase
     }
 
     /**
-     * 
      *
      * @test
      * @return void
@@ -49,11 +47,10 @@ class OrderControllerTest extends TestCase
             route('orders.store')
         );
 
-        $response->assertRedirect(route('login'));            
+        $response->assertRedirect(route('login'));
     }
     
     /**
-     * 
      *
      * @test
      * @return void
@@ -72,7 +69,6 @@ class OrderControllerTest extends TestCase
     }
 
     /**
-     * 
      *
      * @test
      * @return void
@@ -102,13 +98,12 @@ class OrderControllerTest extends TestCase
             $user,
             OrderCreated::class,
             function ($notification, $channels) {
-                return array_search("mail",$channels)!==false && $notification->order->quantity === 2;
+                return array_search("mail", $channels)!==false && $notification->order->quantity === 2;
             }
-        );        
+        );
     }
 
     /**
-     * 
      *
      * @test
      * @return void
@@ -119,11 +114,10 @@ class OrderControllerTest extends TestCase
             route('orders.index')
         );
         
-        $response->assertRedirect(route('login'));            
-    }    
+        $response->assertRedirect(route('login'));
+    }
     
     /**
-     * 
      *
      * @test
      * @return void
@@ -144,7 +138,6 @@ class OrderControllerTest extends TestCase
     }
 
     /**
-     * 
      *
      * @test
      * @return void
@@ -166,7 +159,6 @@ class OrderControllerTest extends TestCase
     }
 
     /**
-     * 
      *
      * @test
      * @return void
@@ -174,14 +166,13 @@ class OrderControllerTest extends TestCase
     public function only_authenticated_users_can_access_the_view_of_specific_order()
     {
         $response = $this->get(
-            route('orders.show',['order' => 1])
+            route('orders.show', ['order' => 1])
         );
 
-        $response->assertRedirect(route('login'));            
-    }    
+        $response->assertRedirect(route('login'));
+    }
     
     /**
-     * 
      *
      * @test
      * @return void
@@ -199,7 +190,6 @@ class OrderControllerTest extends TestCase
     }
 
     /**
-     * 
      *
      * @test
      * @return void
@@ -218,6 +208,5 @@ class OrderControllerTest extends TestCase
         $response->assertViewIs("web.orders.view")
             ->assertViewHas('viewAny', true)
             ->assertViewHas('order', $order);
-    }    
-
+    }
 }

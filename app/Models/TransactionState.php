@@ -9,7 +9,7 @@ use App\Events\CreateTransactionState;
 class TransactionState extends Model
 {
     use SoftDeletes;
-    protected $dates = ['deleted_at'];    
+    protected $dates = ['deleted_at'];
     protected $guarded = ['id'];
     /**
      * The event map for the model.
@@ -24,7 +24,7 @@ class TransactionState extends Model
     * Relacion con la transaccion.
     *
     * @return Relacion.
-    */    
+    */
     public function transaction()
     {
         return $this->belongsTo('App\Models\Transaction');

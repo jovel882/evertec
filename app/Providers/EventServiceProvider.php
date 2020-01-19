@@ -21,13 +21,13 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         Registered::class => [
             SendEmailVerificationNotification::class,
-        ],                
+        ],
         EventCreateOrder::class => [
             CreateOrder::class,
-        ],                
+        ],
         EventCreateTransactionState::class => [
             CreateTransactionState::class,
-        ],                
+        ],
     ];
 
     /**

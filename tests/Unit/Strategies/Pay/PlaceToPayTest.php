@@ -11,7 +11,7 @@ use App\Strategies\Pay\PlaceToPay as EstrategyPlaceToPay;
 use Dnetix\Redirection\Message\RedirectResponse;
 use Dnetix\Redirection\Message\RedirectInformation;
 
-class PlaceToPay extends TestCase
+class PlaceToPayTest extends TestCase
 {
     protected $stubPlaceToPay;
     protected $stubOrder;
@@ -25,8 +25,7 @@ class PlaceToPay extends TestCase
         $this->stubPlaceToPay = $this->createMock(LibPlaceToPay::class);
         $this->stubOrder = $this->createMock(Order::class);
         $this->stubUser = $this->createMock(User::class);
-        $this->stubTransaction = $this->createMock(Transaction::class);        
-
+        $this->stubTransaction = $this->createMock(Transaction::class);
     }
 
     /**
@@ -169,7 +168,7 @@ class PlaceToPay extends TestCase
         $this->stubTransaction->method('getAttributeValue')
              ->willReturn('CREATED');
         $this->stubTransaction->method('attachStates')
-             ->willReturn(false);             
+             ->willReturn(false);
         $this->stubPlaceToPay->method('query')
              ->willReturn($response);
         
@@ -194,7 +193,7 @@ class PlaceToPay extends TestCase
         $this->stubTransaction->method('getAttributeValue')
              ->willReturn('CREATED');
         $this->stubTransaction->method('attachStates')
-             ->willReturn(true);             
+             ->willReturn(true);
         $this->stubPlaceToPay->method('query')
              ->willReturn($response);
         
@@ -208,12 +207,13 @@ class PlaceToPay extends TestCase
 
     /**
      * Retorna el arreglo con la respuesta de una creacion de pago.
-     * 
+     *
      * @param string|null $status Es el estado para asignar a la respuesta.
      * @param string|null $message Es el mensaje para asignar a la respuesta.
      * @return  RedirectResponse Objeto con la respuesta.
      */
-    public function returnRedirectResponse($status = null, $message = null){
+    public function returnRedirectResponse($status = null, $message = null)
+    {
         return new RedirectResponse([
             "status" => [
               "status" => $status ?? "OK",
@@ -222,18 +222,19 @@ class PlaceToPay extends TestCase
               "date" => "2020-01-19T00:09:40-05:00",
             ],
             "requestId" => 181348,
-            "processUrl" => "https://test.placetopay.com/redirection/session/181348/43d83d36aa46de5f993aafb9b3e0be48",            
-        ]);        
-    }    
+            "processUrl" => "https://test.placetopay.com/redirection/session/181348/43d83d36aa46de5f993aafb9b3e0be48",
+        ]);
+    }
 
     /**
      * Retorna el arreglo con la respuesta de un estado.
-     * 
+     *
      * @param string|null $status Es el estado para asignar a la respuesta.
      * @param string|null $message Es el mensaje para asignar a la respuesta.
      * @return  RedirectInformation Objeto con la respuesta.
      */
-    public function returnRedirectInformation($status = null, $message = null){
+    public function returnRedirectInformation($status = null, $message = null)
+    {
         return new RedirectInformation([
             "requestId"=>22122,
             "status"=>[
@@ -286,9 +287,9 @@ class PlaceToPay extends TestCase
                 "expiration"=>"2020-01-16T18:52:41-05:00",
                 "captureAddress"=>false,
                 "skipResult"=>false,
-                "noBuyerFill"=>false,              
+                "noBuyerFill"=>false,
             ],
             
-        ]);        
-    }    
+        ]);
+    }
 }

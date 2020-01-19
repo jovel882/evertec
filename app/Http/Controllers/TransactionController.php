@@ -12,7 +12,7 @@ class TransactionController extends Controller
      * Modelo de transaccion.
      *
      * @var Transaction
-     */    
+     */
     protected $transaction;
     /**
      * Constructor de la clase.
@@ -23,7 +23,7 @@ class TransactionController extends Controller
     public function __construct(Transaction $transaction)
     {
         $this->transaction = $transaction;
-    }    
+    }
 
     /**
      * Recibe el informe de un pago.
@@ -31,7 +31,7 @@ class TransactionController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function receive($gateway, $uuid, Request $request)
-    {        
+    {
         $transaction = $this->transaction->getByUuid($uuid);
         if ($transaction) {
             $response = $this->updateStatus($transaction);
@@ -40,7 +40,7 @@ class TransactionController extends Controller
                 ->withInput();
             if ($response['success'] == false) {
                 return $return->withErrors($response['data']);
-            }            
+            }
             return $return->with('update', $response['data']);
         } else {
             abort(404);

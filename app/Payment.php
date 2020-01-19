@@ -13,7 +13,7 @@ class Payment
 
     /**
      * @var array $paymentMethodsEnable Metodos de pagos habilitados.
-     */   
+     */
     private static $paymentMethodsEnable=[
         "place_to_pay" => PlaceToPay::class,
         "john_test" => JohnTest::class,
@@ -21,7 +21,7 @@ class Payment
 
 
     private function createStrategy(string $typePay)
-    {        
+    {
         if (isset(self::$paymentMethodsEnable[$typePay])) {
             if ($typePay == "place_to_pay") {
                 return Context::create(
@@ -29,30 +29,28 @@ class Payment
                         resolve('Dnetix\Redirection\PlacetoPay'),
                         new Transaction()
                     )
-                ); 
+                );
             }
 
             return Context::create(new self::$paymentMethodsEnable[$typePay]);
         }
 
-        return false;        
+        return false;
     }
     public function pay(string $typePay, Order $order)
-    {        
-        if ( $staregy = $this->createStrategy($typePay)) {
-                        
+    {
+        if ($staregy = $this->createStrategy($typePay)) {
             return $staregy->pay($order);
         }
 
-        return false;        
-    }    
+        return false;
+    }
     public function getInfoPay(Transaction $transaction)
-    {        
-        if ( $staregy = $this->createStrategy($transaction->gateway)) {
-
+    {
+        if ($staregy = $this->createStrategy($transaction->gateway)) {
             return $staregy->getInfoPay($transaction);
         }
 
-        return false;        
-    }    
+        return false;
+    }
 }

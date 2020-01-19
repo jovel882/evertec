@@ -21,7 +21,7 @@ class CreateTransactionState
      *
      * @return void
      */
-    public function __construct(TransactionState $transactionState )
+    public function __construct(TransactionState $transactionState)
     {
         $this->transactionState = $transactionState;
     }

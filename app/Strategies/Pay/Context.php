@@ -6,8 +6,8 @@ use App\Strategies\Pay\Strategy;
 use App\Models\Order;
 use App\Models\Transaction;
 
-class  Context
-{    
+class Context
+{
     private $strategy;
 
     public function __construct(Strategy $strategy)

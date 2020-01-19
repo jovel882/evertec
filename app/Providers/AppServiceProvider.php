@@ -24,13 +24,13 @@ class AppServiceProvider extends ServiceProvider
      * @return void
      */
     public function boot(Dispatcher $events)
-    {        
+    {
         \App\Models\Transaction::observe(\App\Observers\TransactionObserver::class);
-        $events->listen(BuildingMenu::class, function (BuildingMenu $event) {            
+        $events->listen(BuildingMenu::class, function (BuildingMenu $event) {
             $menu=\App\MenuFilter::getMenu();
             foreach ($menu as $item) {
                 $event->menu->add($item);
             }
-        });        
+        });
     }
 }
