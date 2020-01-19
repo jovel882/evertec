@@ -94,6 +94,7 @@ class Transaction extends Model
             return false;
         }
     }
+    
     /**
      * Obtiene todas las transacciones por estado.
      *

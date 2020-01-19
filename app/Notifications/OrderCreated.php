@@ -12,7 +12,7 @@ class OrderCreated extends Notification
 {
     use Queueable;
 
-    protected $order;
+    public $order;
 
     /**
      * Create a new notification instance.

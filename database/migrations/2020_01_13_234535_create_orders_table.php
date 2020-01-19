@@ -27,7 +27,9 @@ class CreateOrdersTable extends Migration
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
         });
-        \DB::statement('ALTER TABLE `orders` comment "Es la tabla donde se almacenan las ordenes de pedido por usuario." ');
+        if (app()->env != "testing"){
+            \DB::statement('ALTER TABLE `orders` comment "Es la tabla donde se almacenan las ordenes de pedido por usuario." ');
+        }        
     }
 
     /**

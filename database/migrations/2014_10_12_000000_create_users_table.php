@@ -24,7 +24,9 @@ class CreateUsersTable extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
-        \DB::statement('ALTER TABLE `users` comment "Es la tabla donde se almacenan los usuarios." ');
+        if (app()->env != "testing"){
+            \DB::statement('ALTER TABLE `users` comment "Es la tabla donde se almacenan los usuarios." ');
+        }
     }
 
     /**

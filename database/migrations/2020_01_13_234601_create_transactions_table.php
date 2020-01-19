@@ -29,7 +29,9 @@ class CreateTransactionsTable extends Migration
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
         });
-        \DB::statement('ALTER TABLE `transactions` comment "Es la tabla donde se almacenan las transacciones de las ordenes." ');
+        if (app()->env != "testing"){
+            \DB::statement('ALTER TABLE `transactions` comment "Es la tabla donde se almacenan las transacciones de las ordenes." ');
+        }        
     }
 
     /**

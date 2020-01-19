@@ -83,7 +83,7 @@ class OrderController extends Controller
     /**
      * Iniciar un pago.
      *
-     * @param  Order  Modelo para pagar.
+     * @param  Order $order Modelo para pagar.
      * @return \Illuminate\Http\Response
      */
     public function pay(Order $order)

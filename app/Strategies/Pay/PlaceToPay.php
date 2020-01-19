@@ -25,12 +25,25 @@ class PlaceToPay implements Strategy
      */
     public $placeToPay;
 
+    /**
+     * Constructor de metodo de pago.
+     *
+     * @param  PlacetoPayLib $placeToPay  Objeto de la libreria para gestionar las transacciones.
+     * @param  Transaction $transaction  Modelo de transacciones.
+     * @return void
+     */
     public function __construct(PlacetoPayLib $placeToPay, Transaction $transaction)
     {
         $this->placeToPay = $placeToPay;
         $this->transaction = $transaction;
         $this->mapStatus();
     }
+
+    /**
+     * Crea el arreglo para hacer la conversion de los estados recibidos con los permitidos.
+     *
+     * @return void
+     */
     private function mapStatus()
     {
         $statusMap=&$this->statusMap;
@@ -57,10 +70,16 @@ class PlaceToPay implements Strategy
             }
         }, Status::validStatus());
     }
+    /**
+     * Crea la transaccion en placetopay.
+     *
+     * @param  Order $order  Modelo de orden.
+     * @return array Con el estado de la crecion de la transaccion.
+     */
     public function pay(Order $order)
     {
         \DB::beginTransaction();
-        try{
+        try {
             $response = $this->createPay($order);
             \DB::commit();
             return (object) [
@@ -76,7 +95,15 @@ class PlaceToPay implements Strategy
             ];
         }
     }
-    public function createPay(Order $order){
+
+    /**
+     * Realiza los procesos para crear la transaccion.
+     *
+     * @param  Order $order  Modelo de orden.
+     * @return Exception|RedirectResponse Con una excepción si ocurre o conel la respuesta de la crecion de la transaccion.
+     */
+    public function createPay(Order $order)
+    {
         $uuid = $this->getUuid();
         $reference = $this->getReference($order->id);
         $request = $this->getRequestData($order, $reference, $uuid);
@@ -113,18 +140,24 @@ class PlaceToPay implements Strategy
         
         return $response;
     }
+
+    /**
+     * Valida y actualiza el estado de una transaccion con Placetopay.
+     *
+     * @param  Transaction $order  Modelo de orden.
+     * @return array Con la respuesta de la consulta de la transaccion.
+     */
     public function getInfoPay(Transaction $transaction)
     {
         try {
             $response = $this->placeToPay->query($transaction->requestId);
-
-            $transaction_states = $transaction->transaction_states->first();
-
             $status = $this->getStatus($response);
+            
             if (!$status) {
                 throw new \Exception('El estado recibido no se identifica.');
             }
-            if ($transaction_states && $transaction_states->status != $status) {
+
+            if ($transaction->getAttributeValue('current_status') != $status) {
                 if (! $transaction->edit(
                     [
                         'current_status' => $status,
@@ -132,6 +165,7 @@ class PlaceToPay implements Strategy
                 )) {
                     throw new \Exception('Se genero un error al actualizar la transaccion.');
                 }
+                
                 if (! $transaction->attachStates(
                     [
                         [
@@ -143,6 +177,7 @@ class PlaceToPay implements Strategy
                     throw new \Exception('Se genero un error al almacenar el estado de la transaccion.');
                 }
             }
+
             return (Object) [
                 "success" => true,
                 "data" => [
@@ -150,13 +185,21 @@ class PlaceToPay implements Strategy
                     "message" => $response->status()->message(),
                 ]
             ];
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
+            \Log::info($e->getMessage());
             return (Object) [
                 "success" => false,
                 "exception" => $e
             ];
         }
     }
+
+    /**
+     * Obtiene la conversion del estado de la respuesta recibida de place to pay.
+     *
+     * @param  RedirectInformation $response  Modelo de orden.
+     * @return bool|string false indicando que el estado es desconocido o el texto del estado.
+     */
     private function getStatus($response): String
     {
         if (!isset($this->statusMap[$response->status()->status()])) {
@@ -165,6 +208,15 @@ class PlaceToPay implements Strategy
         
         return $this->statusMap[$response->status()->status()];
     }
+
+    /**
+     * Obtiene el arreglo para crear la transaccion en la pasarela.
+     *
+     * @param  Order $order  Modelo de orden.
+     * @param  string $reference Texto de la referencia.
+     * @param  string $uuid  Texto del UUID.
+     * @return array Con el arreglo.
+     */
     private function getRequestData(Order $order, $reference, $uuid): array
     {
         $urlRecive = route("transactions.receive", ["gateway" => "place_to_pay",'uuid' => $uuid]);
@@ -182,7 +234,7 @@ class PlaceToPay implements Strategy
                             "kind" => "iva",
                             "amount" => 0.00
                         ]
-                    ] 
+                    ]
                 ],
                 "items" => [
                     [
@@ -205,6 +257,12 @@ class PlaceToPay implements Strategy
             "paymentMethod" => null
         ];
     }
+
+    /**
+     * Obtiene el arreglo con los datos del pagador.
+     *
+     * @return array Con el arreglo.
+     */
     private function getBuyer(): array
     {
         $user = auth()->user();

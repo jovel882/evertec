@@ -12,17 +12,19 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $tableNames = config('permission.table_names');
-        $this->truncateTables([
-            "transaction_states",
-            "transactions",
-            "orders",
-            $tableNames['role_has_permissions'],
-            $tableNames['model_has_roles'],
-            $tableNames['model_has_permissions'],
-            $tableNames['roles'],
-            $tableNames['permissions'],
-            "users",
-        ]);        
+        if (app()->env != "testing") {
+            $this->truncateTables([
+                "transaction_states",
+                "transactions",
+                "orders",
+                $tableNames['role_has_permissions'],
+                $tableNames['model_has_roles'],
+                $tableNames['model_has_permissions'],
+                $tableNames['roles'],
+                $tableNames['permissions'],
+                "users",
+            ]);
+        }        
         $this->call(PermissionsSeeder::class);
         $this->call(ProfilesSeeder::class);
         $this->call(UsersSeeder::class);
