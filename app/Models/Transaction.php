@@ -38,7 +38,7 @@ class Transaction extends Model
      * @param  array $data Datos para almacenar la transaccion.
      * @return Transaction|false Modelo con la transaccion nueva o un estado false si hay algun error.
      */
-    public static function store($data)
+    public function store($data)
     {
         try {
             return self::create($data);

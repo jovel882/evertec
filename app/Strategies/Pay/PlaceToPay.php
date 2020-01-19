@@ -17,13 +17,18 @@ class PlaceToPay implements Strategy
      */
     public $statusMap;
     /**
+     * @var Transaction $transaction Modelo de transaccion.
+     */
+    public $transaction;
+    /**
      * @var PlacetoPayLib $placeToPay Objeto place to pay.
      */
     public $placeToPay;
 
-    public function __construct(PlacetoPayLib $placeToPay)
+    public function __construct(PlacetoPayLib $placeToPay, Transaction $transaction)
     {
         $this->placeToPay = $placeToPay;
+        $this->transaction = $transaction;
         $this->mapStatus();
     }
     private function mapStatus()
@@ -55,42 +60,8 @@ class PlaceToPay implements Strategy
     public function pay(Order $order)
     {
         \DB::beginTransaction();
-
-        try {
-            $uuid = $this->getUuid();
-            $reference = $this->getReference($order->id);
-            $request = $this->getRequestData($order, $reference, $uuid);
-            $response = $this->placeToPay->request($request);
-
-            if (! $response->isSuccessful()) {
-                throw new \Exception("Se genero un error al crear la transaccion en placetopay (".$response->status()->message().").");
-            }
-            
-            $transaction = Transaction::store([
-                'order_id' => $order->id,
-                'uuid' => $uuid,
-                'current_status' => 'CREATED',
-                'reference' => $reference,
-                'url' => $response->processUrl(),
-                'requestId' => $response->requestId(),
-                'gateway' => 'place_to_pay',
-            ]);
-
-            if (! $transaction) {
-                throw new \Exception("Se genero un error al almacenar la transaccion.");
-            }
-                                            
-            if (! $transaction->attachStates(
-                [
-                    [
-                        'status' => 'CREATED',
-                        'data' => json_encode($response->toArray()),
-                    ]
-                ]
-            )) {
-                throw new \Exception("Se genero un error al almacenar el estado de la transaccion.");
-            }
-
+        try{
+            $response = $this->createPay($order);
             \DB::commit();
             return (object) [
                 'success' => true,
@@ -105,6 +76,43 @@ class PlaceToPay implements Strategy
             ];
         }
     }
+    public function createPay(Order $order){
+        $uuid = $this->getUuid();
+        $reference = $this->getReference($order->id);
+        $request = $this->getRequestData($order, $reference, $uuid);
+        $response = $this->placeToPay->request($request);
+
+        if (! $response->isSuccessful()) {
+            throw new \Exception("Se genero un error al crear la transaccion en placetopay (".$response->status()->message().").");
+        }
+        
+        $transaction = $this->transaction->store([
+            'order_id' => $order->id,
+            'uuid' => $uuid,
+            'current_status' => 'CREATED',
+            'reference' => $reference,
+            'url' => $response->processUrl(),
+            'requestId' => $response->requestId(),
+            'gateway' => 'place_to_pay',
+        ]);
+
+        if (! $transaction) {
+            throw new \Exception('Se genero un error al almacenar la transaccion.');
+        }
+                                        
+        if (! $transaction->attachStates(
+            [
+                [
+                    'status' => 'CREATED',
+                    'data' => json_encode($response->toArray()),
+                ]
+            ]
+        )) {
+            throw new \Exception('Se genero un error al almacenar el estado de la transaccion.');
+        }
+        
+        return $response;
+    }
     public function getInfoPay(Transaction $transaction)
     {
         try {
@@ -114,7 +122,7 @@ class PlaceToPay implements Strategy
 
             $status = $this->getStatus($response);
             if (!$status) {
-                throw new \Exception("El estado recibido no se identifica.");
+                throw new \Exception('El estado recibido no se identifica.');
             }
             if ($transaction_states && $transaction_states->status != $status) {
                 if (! $transaction->edit(
@@ -122,7 +130,7 @@ class PlaceToPay implements Strategy
                         'current_status' => $status,
                     ]
                 )) {
-                    throw new \Exception("Se genero un error al actualizar la transaccion.");
+                    throw new \Exception('Se genero un error al actualizar la transaccion.');
                 }
                 if (! $transaction->attachStates(
                     [
@@ -132,7 +140,7 @@ class PlaceToPay implements Strategy
                         ]
                     ]
                 )) {
-                    throw new \Exception("Se genero un error al almacenar el estado de la transaccion.");
+                    throw new \Exception('Se genero un error al almacenar el estado de la transaccion.');
                 }
             }
             return (Object) [

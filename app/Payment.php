@@ -26,7 +26,8 @@ class Payment
             if ($typePay == "place_to_pay") {
                 return Context::create(
                     new self::$paymentMethodsEnable[$typePay](
-                        resolve('Dnetix\Redirection\PlacetoPay')
+                        resolve('Dnetix\Redirection\PlacetoPay'),
+                        new Transaction()
                     )
                 ); 
             }
