@@ -14,10 +14,12 @@ class AddColumnGatewayOnTransactionsTable extends Migration
     public function up()
     {
         Schema::table('transactions', function (Blueprint $table) {
-            $table->string('gateway')->comment("Es el gateway de transaccion. Los disponibles son place_to_pay, john_test.")->after('requestId');
+            $field = $table->string('gateway')->comment("Es el gateway de transaccion. Los disponibles son place_to_pay, john_test.")->after('requestId');
+            if (app()->env == "testing") {
+                $field->default('default_value');
+            }
         });
     }
-
     /**
      * Reverse the migrations.
      *

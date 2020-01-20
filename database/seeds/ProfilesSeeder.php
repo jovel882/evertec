@@ -15,6 +15,6 @@ class ProfilesSeeder extends Seeder
     {
         Role::create(['name' => 'SuperAdministrator']);
         
-        (Role::create(['name' => 'Ordenes']))->givePermissionTo(Permission::where('name', 'like', 'Orders%')->get());        
+        (Role::create(['name' => 'Ordenes']))->givePermissionTo(Permission::where('name', 'like', 'Orders%')->get());
     }
 }

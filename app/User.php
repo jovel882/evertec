@@ -43,23 +43,25 @@ class User extends Authenticatable
     * Relacion con las ordenes.
     *
     * @return Relacion.
-    */    
+    */
     public function orders()
     {
         return $this->hasMany('App\Models\Order');
     }
-    public function getPermissions(){        
+    public function getPermissions()
+    {
         if (!\Session::has('permissions')) {
             \Session::put('permissions', $this->getAllPermissions()->pluck('name')->toArray());
         }
 
         return \Session::get('permissions');
-    }    
-    public function getRoles(){        
-        if ( ! \Session::has('roles')) {
+    }
+    public function getRoles()
+    {
+        if (! \Session::has('roles')) {
             \Session::put('roles', $this->getRoleNames()->toArray());
         }
 
         return \Session::get('roles');
-    }    
+    }
 }

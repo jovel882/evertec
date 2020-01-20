@@ -42,7 +42,7 @@ class OrderPolicy
     public function create(User $user)
     {
         return true;
-    }    
+    }
 
     /**
      * Determina si el usuario puede pagar la orden.
@@ -54,7 +54,7 @@ class OrderPolicy
     public function pay(User $user, Order $order)
     {
         return $user->id == $order->user_id;
-    }    
+    }
 
     /**
      * Determine whether the user can update the order.

@@ -21,8 +21,8 @@ class MenuFilter implements FilterInterface
                     if (in_array($permission, $userPermissions)) {
                         $bool_authorise=true;
                         break;
-                    }                
-                }                
+                    }
+                }
                 if ($bool_authorise == true) {
                     return $item;
                 } else {
@@ -30,22 +30,22 @@ class MenuFilter implements FilterInterface
                 }
             } else {
                 return $item;
-            }        
+            }
         } else {
             return false;
         }
     }
-    public static function getMenu(){
-        return \Cache::rememberForever('menu', function() {    
+    public static function getMenu()
+    {
+        return \Cache::rememberForever('menu', function () {
             return [
                 ['header' => 'Menu Principal'],
                 [
                     'text' => 'Ordenes',
                     'url' => route('orders.index'),
                     'icon' => 'fas fa-fw fa-file-alt',
-                ],                
-            ];            
-        });        
-        
-    }    
+                ],
+            ];
+        });
+    }
 }

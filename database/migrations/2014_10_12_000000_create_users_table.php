@@ -15,16 +15,18 @@ class CreateUsersTable extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('name',80);
-            $table->string('email',120)->unique();
-            $table->string('phone',40);
+            $table->string('name', 80);
+            $table->string('email', 120)->unique();
+            $table->string('phone', 40);
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();
         });
-        \DB::statement('ALTER TABLE `users` comment "Es la tabla donde se almacenan los usuarios." ');
+        if (app()->env != "testing") {
+            \DB::statement('ALTER TABLE `users` comment "Es la tabla donde se almacenan los usuarios." ');
+        }
     }
 
     /**

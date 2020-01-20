@@ -12,17 +12,19 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $tableNames = config('permission.table_names');
-        $this->truncateTables([
-            "transaction_states",
-            "transactions",
-            "orders",
-            $tableNames['role_has_permissions'],
-            $tableNames['model_has_roles'],
-            $tableNames['model_has_permissions'],
-            $tableNames['roles'],
-            $tableNames['permissions'],
-            "users",
-        ]);        
+        if (app()->env != "testing") {
+            $this->truncateTables([
+                "transaction_states",
+                "transactions",
+                "orders",
+                $tableNames['role_has_permissions'],
+                $tableNames['model_has_roles'],
+                $tableNames['model_has_permissions'],
+                $tableNames['roles'],
+                $tableNames['permissions'],
+                "users",
+            ]);
+        }
         $this->call(PermissionsSeeder::class);
         $this->call(ProfilesSeeder::class);
         $this->call(UsersSeeder::class);
@@ -35,11 +37,12 @@ class DatabaseSeeder extends Seeder
      * @param array $tables Array con los nombres de las tablas a truncar.
      * @return void.
      */
-    protected function truncateTables(array $tables):void{
+    protected function truncateTables(array $tables):void
+    {
         DB::statement("SET FOREIGN_KEY_CHECKS=0");
         foreach ($tables as $table) {
             DB::table($table)->truncate();
         }
-        DB::statement("SET FOREIGN_KEY_CHECKS=1");        
-    }     
+        DB::statement("SET FOREIGN_KEY_CHECKS=1");
+    }
 }
