@@ -44,6 +44,6 @@ class ValidatePayStatus extends Command
             'PENDING',
         ])->each(function ($transaction, $key) {
             TransactionController::updateStatus($transaction);
-        });        
+        });
     }
 }

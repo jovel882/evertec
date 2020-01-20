@@ -6,7 +6,7 @@ use App\Models\Order;
 use App\Models\Transaction;
 
 class JohnTest implements Strategy
-{  
+{
     public function pay(Order $order)
     {
         return (object) [
@@ -22,6 +22,6 @@ class JohnTest implements Strategy
                 "status" => 'CREATED',
                 "message" => 'Pago creado.',
             ]
-        ];       
+        ];
     }
 }

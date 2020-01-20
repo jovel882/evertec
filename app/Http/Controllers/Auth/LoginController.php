@@ -46,7 +46,7 @@ class LoginController extends Controller
      */
     public function logout(Request $request)
     {
-        \Session::forget('permissions'); 
+        \Session::forget('permissions');
         $this->guard()->logout();
         return redirect('/');
     }
@@ -61,9 +61,9 @@ class LoginController extends Controller
         $urlPrevious = url()->previous();
         $urlBase = url()->to('/');
         // Set the previous url that we came from to redirect to after successful login but only if is internal
-        if(($urlPrevious != $urlBase . '/login') && (substr($urlPrevious, 0, strlen($urlBase)) === $urlBase)) {
+        if (($urlPrevious != $urlBase . '/login') && (substr($urlPrevious, 0, strlen($urlBase)) === $urlBase)) {
             session()->put('url.intended', $urlPrevious);
         }
         return view('auth.login');
-    }    
+    }
 }

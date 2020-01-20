@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Transaction;
-use App\Strategies\Pay\Context;
+use Facades\App\Payment;
 
 class TransactionController extends Controller
 {
@@ -12,7 +12,7 @@ class TransactionController extends Controller
      * Modelo de transaccion.
      *
      * @var Transaction
-     */    
+     */
     protected $transaction;
     /**
      * Constructor de la clase.
@@ -23,7 +23,7 @@ class TransactionController extends Controller
     public function __construct(Transaction $transaction)
     {
         $this->transaction = $transaction;
-    }    
+    }
 
     /**
      * Recibe el informe de un pago.
@@ -31,7 +31,7 @@ class TransactionController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function receive($gateway, $uuid, Request $request)
-    {        
+    {
         $transaction = $this->transaction->getByUuid($uuid);
         if ($transaction) {
             $response = $this->updateStatus($transaction);
@@ -40,7 +40,7 @@ class TransactionController extends Controller
                 ->withInput();
             if ($response['success'] == false) {
                 return $return->withErrors($response['data']);
-            }            
+            }
             return $return->with('update', $response['data']);
         } else {
             abort(404);
@@ -53,23 +53,23 @@ class TransactionController extends Controller
      */
     public static function updateStatus(Transaction $transaction)
     {
-        $strategy = Context::create($transaction->gateway);
-        if (!$strategy) {
-            $errors = new \Illuminate\Support\MessageBag();
-            $errors->add('msg_0', "El metodo de pago no esta soportado.");
+        $response = Payment::getInfoPay($transaction);
+        if (! $response) {
             return [
                 'success' => false,
-                'data' => $errors,
+                'data' => new \Illuminate\Support\MessageBag([
+                    'msg_0' => 'El metodo de pago no esta soportado.',
+                ]),
             ];
         }
-        $response = $strategy->getInfoPay($transaction);
+        
         if (! $response->success) {
-            $errors = new \Illuminate\Support\MessageBag();
-            $errors->add('msg_0', "Se genero un error al actualizar la transacion.");
-            $errors->add('msg_1', $response->exception->getMessage());
             return [
                 'success' => false,
-                'data' => $errors,
+                'data' => new \Illuminate\Support\MessageBag([
+                    'msg_0' => 'Se genero un error al actualizar la transacion.',
+                    'msg_1' => $response->exception->getMessage()
+                ]),
             ];
         }
         return [

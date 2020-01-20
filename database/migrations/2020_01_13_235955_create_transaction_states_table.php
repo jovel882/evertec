@@ -25,8 +25,10 @@ class CreateTransactionStatesTable extends Migration
                 ->references('id')->on('transactions')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
-            });
+        });
+        if (app()->env != "testing") {
             \DB::statement('ALTER TABLE `transaction_states` comment "Es la tabla donde se almacenan los estados de las transacciones." ');
+        }
     }
 
     /**

@@ -12,6 +12,9 @@ class OrdersSeeder extends Seeder
      */
     public function run()
     {
+        $dispatcher = Order::getEventDispatcher();
+        Order::unsetEventDispatcher();
         factory(Order::class, 50)->create();
+        Order::setEventDispatcher($dispatcher);
     }
 }

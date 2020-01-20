@@ -52,7 +52,7 @@
                                                         {{$order->quantity}}
                                                     </td>
                                                     <td>
-                                                        {{$order->total}}
+                                                        {{$order->total_format}}
                                                     </td>
                                                     <td>
                                                         {{$order->created_at}}

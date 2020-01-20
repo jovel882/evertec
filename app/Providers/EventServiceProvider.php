@@ -3,7 +3,11 @@
 namespace App\Providers;
 
 use Illuminate\Auth\Events\Registered;
+use App\Events\CreateOrder as EventCreateOrder;
+use App\Events\CreateTransactionState as EventCreateTransactionState;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
+use App\Listeners\CreateOrder;
+use App\Listeners\CreateTransactionState;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Event;
 
@@ -17,6 +21,12 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         Registered::class => [
             SendEmailVerificationNotification::class,
+        ],
+        EventCreateOrder::class => [
+            CreateOrder::class,
+        ],
+        EventCreateTransactionState::class => [
+            CreateTransactionState::class,
         ],
     ];
 

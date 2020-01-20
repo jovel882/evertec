@@ -70,7 +70,7 @@
                                 <div class="col-sm-4">
                                     <div class="form-group">
                                         <i class="fa fa-fw fa-dollar-sign"></i> <label>Total:</label>
-                                        <span class="text-orange">{{ $order->total }}</span>
+                                        <span class="text-orange">{{ $order->total_format }}</span>
                                     </div>                                
                                 </div>
                                 <div class="col-sm-4">

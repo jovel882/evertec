@@ -12,6 +12,9 @@ class TransactionStatesSeeder extends Seeder
      */
     public function run()
     {
+        $dispatcher = TransactionState::getEventDispatcher();
+        TransactionState::unsetEventDispatcher();
         factory(TransactionState::class, 50)->create();
+        TransactionState::setEventDispatcher($dispatcher);
     }
 }
