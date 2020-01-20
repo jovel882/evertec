@@ -27,6 +27,7 @@ class CreateOrder
      */
     public function handle(EventCreateOrder $event)
     {
-        auth()->user()->notify(new OrderCreated($event->order));
+        $event->order
+            ->user->notify(new OrderCreated($event->order));
     }
 }

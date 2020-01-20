@@ -2,11 +2,10 @@
 
 namespace App\Providers;
 
-use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider;
 use Dnetix\Redirection\PlacetoPay;
 
-class GatewaySeriveProvider extends ServiceProvider implements DeferrableProvider
+class GatewaySeriveProvider extends ServiceProvider
 {
     /**
      * Register services.

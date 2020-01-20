@@ -96,6 +96,21 @@ class Transaction extends Model
     }
     
     /**
+     * Actualiza la orden de una transaccion.
+     *
+     * @param  array $data Datos para actualizar la orden de la transaccion.
+     * @return Order|false Modelo con la transaccion.
+     */
+    public function updateOrder($data)
+    {
+        try {
+            return $this->order->fill($data)->save();
+        } catch (\Illuminate\Database\QueryException $exception) {
+            return false;
+        }
+    }
+
+    /**
      * Obtiene todas las transacciones por estado.
      *
      * @param array $status Estados de las transacciones a buscar.

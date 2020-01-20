@@ -45,7 +45,7 @@ Route::group(
         'middleware' => ['auth'],
     ],
     function() {
-        Route::any('/receive/{gateway}/{uuid}','TransactionController@receive')
+        Route::get('/receive/{gateway}/{uuid}','TransactionController@receive')
             ->where('uuid', '[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}')
             ->name('transactions.receive');        
     }
@@ -55,9 +55,3 @@ Route::get('/notification/unread/{id}', function ($id) {
     $notification->markAsRead();
     return redirect($notification->data['url']);
 })->name('notification.unread');
-
-Route::get('mail/{id}', function ($id) {
-    $order = App\Models\Order::findOrFail($id);
-    return (new App\Notifications\OrderCreated($order))
-                ->toMail($order->user);
-})->where('id', '[0-9]+');

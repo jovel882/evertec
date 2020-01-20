@@ -24,7 +24,7 @@ return [
     | Precio del producto.
     |--------------------------------------------------------------------------
     |
-    | Especifica el valor de una unidad del producto.
+    | Especifica el valor de una unidad del producto, entero valido.
     |
     */
 
@@ -89,7 +89,7 @@ return [
     | Minutos para expirar la transaccion en placetopay.
     |--------------------------------------------------------------------------
     |
-    | Especifica la cantidad de minutos para expirar la transaccion.
+    | Especifica la cantidad de minutos para expirar la transaccion, entero valido.
     |
     */
 
@@ -117,7 +117,7 @@ return [
     | Dias para expirar las ordenes.
     |--------------------------------------------------------------------------
     |
-    | Especifica la cantidad de dias para expirar la orden.
+    | Especifica la cantidad de dias para expirar la orden, entero valido.
     |
     */
 

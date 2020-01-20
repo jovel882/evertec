@@ -185,6 +185,33 @@ class PlaceToPayTest extends TestCase
      * @test
      * @return void
      */
+    public function check_payment_and_receive_order_status_update_error()
+    {
+        $response = $this->returnRedirectInformation();
+        $this->stubTransaction->method('edit')
+             ->willReturn(true);
+        $this->stubTransaction->method('getAttributeValue')
+             ->willReturn('CREATED');
+        $this->stubTransaction->method('attachStates')
+             ->willReturn(true);
+        $this->stubTransaction->method('updateOrder')
+             ->willReturn(false);             
+        $this->stubPlaceToPay->method('query')
+             ->willReturn($response);
+        
+        $placeToPay = new EstrategyPlaceToPay($this->stubPlaceToPay, $this->stubTransaction);
+        $resposneReturn = $placeToPay->getInfoPay($this->stubTransaction);
+
+        $this->assertEquals($resposneReturn->success, false);
+        $this->assertInstanceOf(\Exception::class, $resposneReturn->exception);
+        $this->assertEquals($resposneReturn->exception->getMessage(), 'Se genero un error al actualizar el estado de la orden.');
+    }
+
+    /**
+     *
+     * @test
+     * @return void
+     */
     public function check_payment_and_receive_correct_response()
     {
         $response = $this->returnRedirectInformation();
@@ -193,6 +220,8 @@ class PlaceToPayTest extends TestCase
         $this->stubTransaction->method('getAttributeValue')
              ->willReturn('CREATED');
         $this->stubTransaction->method('attachStates')
+             ->willReturn(true);
+        $this->stubTransaction->method('updateOrder')
              ->willReturn(true);
         $this->stubPlaceToPay->method('query')
              ->willReturn($response);

@@ -17,6 +17,10 @@ class PlaceToPay implements Strategy
      */
     public $statusMap;
     /**
+     * @var array $statusMap Estados mapeados para las ordenes.
+     */
+    public $statusOrderMap;
+    /**
      * @var Transaction $transaction Modelo de transaccion.
      */
     public $transaction;
@@ -46,26 +50,32 @@ class PlaceToPay implements Strategy
      */
     private function mapStatus()
     {
-        $statusMap=&$this->statusMap;
-        array_map(function ($state) use (&$statusMap) {
+        $statusMap = &$this->statusMap;
+        $statusOrderMap = &$this->statusOrderMap;
+        array_map(function ($state) use (&$statusMap, &$statusOrderMap) {
             switch ($state) {
                 case 'APPROVED':
                     $statusMap[$state] = "PAYED";
+                    $statusOrderMap[$state] = "PAYED";
                     break;
                 case 'ERROR':
                 case 'FAILED':
                 case 'REJECTED':
                     $statusMap[$state] = "REJECTED";
+                    $statusOrderMap[$state] = "CREATED";
                     break;
                 case 'REFUNDED':
                     $statusMap[$state] = "REFUNDED";
+                    $statusOrderMap[$state] = "CREATED";
                     break;
                 case 'PENDING_VALIDATION':
                 case 'PENDING':
                     $statusMap[$state] = "PENDING";
+                    $statusOrderMap[$state] = "CREATED";
                     break;
                 default:
                     $statusMap[$state] = "CREATED";
+                    $statusOrderMap[$state] = "CREATED";
                     break;
             }
         }, Status::validStatus());
@@ -87,6 +97,13 @@ class PlaceToPay implements Strategy
                 'url' => $response->processUrl(),
             ];
         } catch (\Exception $e) {
+            \Log::info($e->getMessage());
+            \DB::rollback();
+            return (object) [
+                'success' => false,
+                'exception' => $e,
+            ];
+        } catch (\Dnetix\Redirection\Exceptions\PlacetoPayException $e) {
             \Log::info($e->getMessage());
             \DB::rollback();
             return (object) [
@@ -176,6 +193,14 @@ class PlaceToPay implements Strategy
                 )) {
                     throw new \Exception('Se genero un error al almacenar el estado de la transaccion.');
                 }
+
+                if (! $transaction->updateOrder(
+                    [
+                        'status' => $this->getOrderStatus($response),
+                    ]
+                )) {
+                    throw new \Exception('Se genero un error al actualizar el estado de la orden.');
+                }
             }
 
             return (Object) [
@@ -190,6 +215,13 @@ class PlaceToPay implements Strategy
             return (Object) [
                 "success" => false,
                 "exception" => $e
+            ];
+        } catch (\Dnetix\Redirection\Exceptions\PlacetoPayException $e) {
+            \Log::info($e->getMessage());
+            \DB::rollback();
+            return (object) [
+                'success' => false,
+                'exception' => $e,
             ];
         }
     }
@@ -207,6 +239,21 @@ class PlaceToPay implements Strategy
         }
         
         return $this->statusMap[$response->status()->status()];
+    }
+    
+    /**
+     * Obtiene la conversion del estado de la respuesta recibida de place to pay a los de las ordenes.
+     *
+     * @param  RedirectInformation $response  Modelo de orden.
+     * @return bool|string false indicando que el estado es desconocido o el texto del estado.
+     */
+    private function getOrderStatus($response): String
+    {
+        if (!isset($this->statusOrderMap[$response->status()->status()])) {
+            return false;
+        }
+        
+        return $this->statusOrderMap[$response->status()->status()];
     }
 
     /**

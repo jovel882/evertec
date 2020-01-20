@@ -27,6 +27,10 @@ class CreateTransactionState
      */
     public function handle(EventCreateTransactionState $event)
     {
-        auth()->user()->notify(new TransactionsStatusCreated($event->transactionState));
+        $event->transactionState
+            ->transaction
+            ->order
+            ->user
+            ->notify(new TransactionsStatusCreated($event->transactionState));
     }
 }

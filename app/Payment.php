@@ -22,19 +22,24 @@ class Payment
 
     private function createStrategy(string $typePay)
     {
-        if (isset(self::$paymentMethodsEnable[$typePay])) {
-            if ($typePay == "place_to_pay") {
-                return Context::create(
-                    new self::$paymentMethodsEnable[$typePay](
-                        resolve('Dnetix\Redirection\PlacetoPay'),
-                        new Transaction()
-                    )
-                );
+        try {
+            if (isset(self::$paymentMethodsEnable[$typePay])) {
+                if ($typePay == "place_to_pay") {
+                    return Context::create(
+                        new self::$paymentMethodsEnable[$typePay](
+                            resolve('Dnetix\Redirection\PlacetoPay'),
+                            new Transaction()
+                        )
+                    );
+                }
+    
+                return Context::create(new self::$paymentMethodsEnable[$typePay]);
             }
-
-            return Context::create(new self::$paymentMethodsEnable[$typePay]);
+        } catch (\Dnetix\Redirection\Exceptions\PlacetoPayException $e) {
+            \Log::info($e->getMessage());
+        } catch (\Exception $e) {
+            \Log::info($e->getMessage());
         }
-
         return false;
     }
     public function pay(string $typePay, Order $order)
